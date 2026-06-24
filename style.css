@@ -312,6 +312,63 @@ ul {
   text-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* Terminal hint button — hidden by default, shown only in hacker mode */
+.terminal-hint {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-full);
+  background: rgba(0, 255, 102, 0.08);
+  border: 1px solid rgba(0, 255, 102, 0.25);
+  color: #00ff66;
+  cursor: pointer;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s var(--ease-spring), box-shadow 0.25s ease;
+}
+
+body.hacker-mode .terminal-hint {
+  display: flex;
+}
+
+.terminal-hint:hover {
+  background: rgba(0, 255, 102, 0.15);
+  border-color: rgba(0, 255, 102, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0, 255, 102, 0.15);
+}
+
+.terminal-hint .material-symbols-outlined {
+  font-size: 1.125rem;
+  color: #00ff66;
+  text-shadow: 0 0 8px rgba(0, 255, 102, 0.5);
+}
+
+.terminal-hint-label {
+  text-shadow: 0 0 6px rgba(0, 255, 102, 0.4);
+}
+
+.terminal-hint-key {
+  padding: 0.125rem 0.4rem;
+  border-radius: 4px;
+  background: rgba(0, 255, 102, 0.15);
+  border: 1px solid rgba(0, 255, 102, 0.35);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #00ff66;
+  line-height: 1.2;
+  text-shadow: 0 0 4px rgba(0, 255, 102, 0.5);
+}
+
+@media (max-width: 600px) {
+  .terminal-hint-label {
+    display: none;
+  }
+}
+
 .header-nav {
   display: flex;
   align-items: center;
@@ -1298,7 +1355,7 @@ ul {
 }
 
 body.hacker-mode #matrix-canvas {
-  opacity: 0.15;
+  opacity: 0.5;
 }
 
 /* ============================================================
@@ -1382,9 +1439,9 @@ body.hacker-mode #matrix-canvas {
   transition: opacity 0.8s ease;
 }
 
-/* Hide the selection screen immediately if theme selection is already loaded */
+/* Hide the selection screen initially if theme selection is already loaded (prevents flash) */
 .theme-selected #pill-selection-screen {
-  display: none !important;
+  display: none;
 }
 
 
@@ -1659,9 +1716,9 @@ body.hacker-mode #matrix-canvas {
 }
 
 /* ============================================================
-   FLOATING THEME TOGGLE BUTTON (small, 2 themes only)
+   FLOATING PILL RETURN BUTTON (go back to pill selection)
    ============================================================ */
-.theme-toggle-floating {
+.pill-return-floating {
   position: fixed;
   bottom: 1.5rem;
   right: 1.5rem;
@@ -1682,14 +1739,30 @@ body.hacker-mode #matrix-canvas {
   transition: transform 0.3s var(--ease-spring), border-color 0.3s ease, background 0.3s ease;
 }
 
-.theme-toggle-floating:hover {
-  transform: scale(1.1) rotate(15deg);
+.pill-return-floating:hover {
+  transform: scale(1.1) rotate(-45deg);
   border-color: var(--border-accent);
   background: rgba(15, 23, 42, 0.8);
 }
 
-.theme-toggle-floating .material-symbols-outlined {
+.pill-return-floating .material-symbols-outlined {
   font-size: 1.625rem;
+}
+
+/* Hacker mode styling for pill return button */
+body.hacker-mode .pill-return-floating {
+  border-color: rgba(0, 255, 102, 0.3);
+  background: rgba(0, 20, 0, 0.7);
+}
+
+body.hacker-mode .pill-return-floating:hover {
+  border-color: #00ff66;
+  box-shadow: 0 0 15px rgba(0, 255, 102, 0.3), 0 8px 32px rgba(0,0,0,0.35);
+}
+
+body.hacker-mode .pill-return-floating .material-symbols-outlined {
+  color: #00ff66;
+  text-shadow: 0 0 8px rgba(0, 255, 102, 0.5);
 }
 
 /* ============================================================
@@ -2025,3 +2098,593 @@ body.hacker-mode .chibi-sticker {
   50% { opacity: 0; }
 }
 
+/* ============================================================
+   🥚 EASTER EGG: HACKER TERMINAL
+   ============================================================ */
+.hacker-terminal {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(-105%);
+  width: min(90vw, 750px);
+  height: 60vh;
+  z-index: 99990;
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  background: rgba(0, 5, 0, 0.96);
+  border: 1px solid rgba(0, 255, 102, 0.35);
+  border-top: none;
+  box-shadow:
+    0 20px 80px rgba(0, 0, 0, 0.7),
+    0 0 40px rgba(0, 255, 102, 0.12),
+    inset 0 0 80px rgba(0, 255, 102, 0.03);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+.hacker-terminal.open {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Terminal Header ── */
+.terminal-header {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  background: rgba(0, 20, 0, 0.9);
+  border-bottom: 1px solid rgba(0, 255, 102, 0.2);
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.terminal-dots {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.terminal-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.dot-red { background: #ff5f57; box-shadow: 0 0 6px rgba(255, 95, 87, 0.5); }
+.dot-yellow { background: #ffbd2e; box-shadow: 0 0 6px rgba(255, 189, 46, 0.5); }
+.dot-green { background: #28c841; box-shadow: 0 0 6px rgba(40, 200, 65, 0.5); }
+
+.terminal-title {
+  flex: 1;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: rgba(0, 255, 102, 0.7);
+  letter-spacing: 0.05em;
+}
+
+.terminal-close-btn {
+  background: none;
+  border: 1px solid rgba(0, 255, 102, 0.2);
+  border-radius: 4px;
+  color: rgba(0, 255, 102, 0.6);
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.terminal-close-btn:hover {
+  color: #ff5f57;
+  border-color: #ff5f57;
+  background: rgba(255, 95, 87, 0.1);
+}
+
+.terminal-close-btn .material-symbols-outlined {
+  font-size: 1.125rem;
+}
+
+/* ── Terminal Body ── */
+.terminal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 255, 102, 0.3) transparent;
+}
+
+.terminal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.terminal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.terminal-body::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 102, 0.25);
+  border-radius: 3px;
+}
+
+/* ── Terminal Output ── */
+.terminal-output {
+  flex: 1;
+}
+
+.terminal-line {
+  color: #00ff66;
+  white-space: pre-wrap;
+  word-break: break-word;
+  animation: termLineIn 0.15s ease both;
+  min-height: 1.4em;
+}
+
+@keyframes termLineIn {
+  from {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.term-fade-in {
+  animation: termFadeIn 0.3s ease both;
+}
+
+@keyframes termFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Terminal Input ── */
+.terminal-input-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  flex-shrink: 0;
+}
+
+.terminal-prompt {
+  color: #00ff66;
+  font-weight: 700;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  text-shadow: 0 0 6px rgba(0, 255, 102, 0.5);
+}
+
+.terminal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.875rem;
+  caret-color: #00ff66;
+  padding: 0;
+}
+
+.terminal-input::placeholder {
+  color: rgba(0, 255, 102, 0.3);
+}
+
+/* ── Scanlines Overlay ── */
+.terminal-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 102, 0.02) 2px,
+    rgba(0, 255, 102, 0.02) 4px
+  );
+  z-index: 5;
+}
+
+/* ── Color utility classes ── */
+.term-green-bright { color: #00ff66; text-shadow: 0 0 6px rgba(0, 255, 102, 0.4); }
+.term-dim { color: rgba(0, 255, 102, 0.5); }
+.term-white { color: #e0e0e0; }
+.term-red { color: #ff4444; text-shadow: 0 0 6px rgba(255, 68, 68, 0.4); }
+.term-yellow { color: #ffcc00; text-shadow: 0 0 4px rgba(255, 204, 0, 0.3); }
+.term-cyan { color: #00ccff; text-shadow: 0 0 4px rgba(0, 204, 255, 0.3); }
+.term-blue { color: #66aaff; }
+
+.term-blink {
+  animation: termBlink 0.6s step-end infinite;
+}
+
+@keyframes termBlink {
+  50% { opacity: 0; }
+}
+
+/* ── Terminal Flash (on hack success) ── */
+.hacker-terminal.terminal-flash {
+  box-shadow:
+    0 20px 80px rgba(0, 0, 0, 0.7),
+    0 0 80px rgba(0, 255, 102, 0.5),
+    0 0 150px rgba(0, 255, 102, 0.2),
+    inset 0 0 60px rgba(0, 255, 102, 0.1);
+  border-color: #00ff66;
+}
+
+/* ── System Glitch (sudo rm -rf /) ── */
+.system-glitch {
+  animation: systemGlitch 0.15s ease infinite;
+}
+
+@keyframes systemGlitch {
+  0% { transform: translate(0); filter: hue-rotate(0deg); }
+  20% { transform: translate(-3px, 2px); filter: hue-rotate(90deg); }
+  40% { transform: translate(3px, -2px); filter: hue-rotate(180deg); }
+  60% { transform: translate(-2px, -1px); filter: hue-rotate(270deg); }
+  80% { transform: translate(2px, 1px); filter: hue-rotate(360deg); }
+  100% { transform: translate(0); filter: hue-rotate(0deg); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .hacker-terminal {
+    width: 100vw;
+    height: 55vh;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  }
+  
+  .terminal-body {
+    font-size: 0.75rem;
+    padding: 0.75rem 1rem;
+  }
+  
+  .terminal-prompt {
+    font-size: 0.75rem;
+  }
+  
+  .terminal-input {
+    font-size: 0.75rem;
+  }
+}
+
+/* ============================================================
+   🥚 EASTER EGG: BULLET TIME STYLES
+   ============================================================ */
+/* Slow down all CSS animations and transitions when active */
+body.bullet-time * {
+  transition-duration: 2s !important;
+  animation-duration: 4s !important;
+}
+
+body.bullet-time {
+  cursor: crosshair !important;
+}
+
+/* Bullet trail particles (mouse move) */
+.bullet-trail-particle {
+  position: fixed;
+  color: #00ff66;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  pointer-events: none;
+  z-index: 99999;
+  text-shadow: 0 0 12px #00ff66, 0 0 20px #00ff66;
+  transform: translate(-50%, -50%);
+}
+
+/* Ambient floating characters (during bullet time) */
+.bullet-ambient-char {
+  position: fixed;
+  color: rgba(0, 255, 102, 0.4);
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  pointer-events: none;
+  z-index: 99998;
+  text-shadow: 0 0 15px rgba(0, 255, 102, 0.5);
+  transform: translate(-50%, -50%);
+}
+
+/* ============================================================
+   🥚 EASTER EGG: BULLET TIME BUTTON & OVERLAY
+   ============================================================ */
+/* Bullet Time Floating Button */
+.bullet-time-floating {
+  position: fixed;
+  bottom: 9.5rem;
+  right: 1.5rem;
+  z-index: 1000;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  background: rgba(0, 20, 0, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(0, 255, 102, 0.3);
+  color: #00ff66;
+  display: none; /* Only shown in hacker mode */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  transition: transform 0.3s var(--ease-spring), border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.hacker-mode .bullet-time-floating {
+  display: flex;
+}
+
+.bullet-time-floating:hover, .bullet-time-floating.active {
+  transform: scale(1.1);
+  border-color: #00ff66;
+  background: rgba(0, 40, 0, 0.9);
+  box-shadow: 0 0 15px rgba(0, 255, 102, 0.4), 0 8px 32px rgba(0,0,0,0.35);
+}
+
+.bullet-time-floating .material-symbols-outlined {
+  font-size: 1.625rem;
+  text-shadow: 0 0 8px rgba(0, 255, 102, 0.5);
+  transition: transform 0.5s ease;
+}
+
+.bullet-time-floating:hover .material-symbols-outlined {
+  transform: rotate(90deg);
+}
+
+.bullet-time-floating.active .material-symbols-outlined {
+  animation: pulseRotate 2s linear infinite;
+}
+
+@keyframes pulseRotate {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+/* Module Downloaded Overlay Text */
+.matrix-overlay-text {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 5, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.matrix-overlay-text.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.glitch-text {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 900;
+  color: #00ff66;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: 
+    0 0 10px rgba(0, 255, 102, 0.8),
+    0 0 20px rgba(0, 255, 102, 0.4);
+  position: relative;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+.glitch-text::before {
+  left: 3px;
+  text-shadow: -2px 0 #ff00c1;
+  animation: glitch-anim-1 2s infinite linear alternate-reverse;
+}
+
+.glitch-text::after {
+  left: -3px;
+  text-shadow: -2px 0 #00fff9;
+  animation: glitch-anim-2 3s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim-1 {
+  0% { clip-path: inset(20% 0 80% 0); }
+  20% { clip-path: inset(60% 0 10% 0); }
+  40% { clip-path: inset(40% 0 50% 0); }
+  60% { clip-path: inset(80% 0 5% 0); }
+  80% { clip-path: inset(10% 0 70% 0); }
+  100% { clip-path: inset(30% 0 40% 0); }
+}
+
+@keyframes glitch-anim-2 {
+  0% { clip-path: inset(10% 0 60% 0); }
+  20% { clip-path: inset(30% 0 20% 0); }
+  40% { clip-path: inset(70% 0 10% 0); }
+  60% { clip-path: inset(20% 0 50% 0); }
+  80% { clip-path: inset(50% 0 30% 0); }
+  100% { clip-path: inset(5% 0 80% 0); }
+}
+
+/* ============================================================
+   🥚 EASTER EGG: FIGHT WITH AGENTS MINIGAME STYLES
+   ============================================================ */
+body.agent-mode {
+  --color-a: 255, 42, 42;
+  --color-b: 180, 0, 0;
+  --text-primary: #ffcccc;
+  --text-secondary: rgba(255, 100, 100, 0.8);
+  --border-glass: rgba(255, 42, 42, 0.25);
+  --border-accent: rgba(255, 42, 42, 0.6);
+  --bg-deep: #1a0000;
+  --bg-surface: rgba(40, 0, 0, 0.5);
+  --bg-elevated: rgba(60, 0, 0, 0.6);
+  --bg-gradient: radial-gradient(circle at 50% -50%, rgba(255, 0, 0, 0.25) 0%, rgba(10, 0, 0, 0.98) 100%);
+  cursor: crosshair;
+}
+
+body.agent-mode .matrix-overlay-text {
+  background: rgba(25, 0, 0, 0.85);
+}
+
+body.agent-mode .glitch-text::before {
+  text-shadow: -4px 0 #ff0000;
+}
+
+body.agent-mode .glitch-text::after {
+  text-shadow: 4px 0 #aa0000;
+}
+
+/* Override hacker mode green colors to red */
+body.agent-mode .project-card,
+body.agent-mode .skill-card {
+  border-color: rgba(255, 42, 42, 0.2);
+}
+
+body.agent-mode .project-card:hover,
+body.agent-mode .skill-card:hover {
+  border-color: rgba(255, 42, 42, 0.6);
+  box-shadow: 0 0 20px rgba(255, 42, 42, 0.2);
+}
+
+/* Floating Buttons Override */
+body.agent-mode .pill-return-floating,
+body.agent-mode .music-toggle-floating,
+body.agent-mode .terminal-hint,
+body.agent-mode .bullet-time-floating {
+  border-color: rgba(255, 42, 42, 0.3) !important;
+  background: rgba(20, 0, 0, 0.7) !important;
+  color: #ff2a2a !important;
+}
+
+body.agent-mode .pill-return-floating:hover,
+body.agent-mode .music-toggle-floating:hover,
+body.agent-mode .terminal-hint:hover,
+body.agent-mode .bullet-time-floating:hover,
+body.agent-mode .bullet-time-floating.active {
+  border-color: #ff0000 !important;
+  background: rgba(40, 0, 0, 0.9) !important;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.4), 0 8px 32px rgba(0,0,0,0.35) !important;
+}
+
+body.agent-mode .pill-return-floating .material-symbols-outlined,
+body.agent-mode .music-toggle-floating .material-symbols-outlined,
+body.agent-mode .terminal-hint .material-symbols-outlined,
+body.agent-mode .bullet-time-floating .material-symbols-outlined {
+  color: #ff0000 !important;
+  text-shadow: 0 0 8px rgba(255, 0, 0, 0.5) !important;
+}
+
+body.agent-mode .terminal-hint-key {
+  color: #ff0000 !important;
+  border-color: rgba(255, 0, 0, 0.5) !important;
+}
+
+body.agent-mode .project-card:hover .project-title,
+body.agent-mode .skill-card:hover .skill-name {
+  color: #ff2a2a;
+  text-shadow: 0 0 10px rgba(255, 42, 42, 0.4);
+}
+
+body.agent-mode .glitch-text {
+  color: #ff2a2a;
+  text-shadow: 0 0 10px rgba(255, 42, 42, 0.8), 0 0 20px rgba(255, 42, 42, 0.4);
+}
+
+body.agent-mode .terminal-prompt,
+body.agent-mode .term-green-bright {
+  color: #ff2a2a !important;
+  text-shadow: 0 0 6px rgba(255, 42, 42, 0.4) !important;
+}
+
+body.agent-mode .hacker-terminal {
+  border-color: rgba(255, 42, 42, 0.35);
+  box-shadow:
+    0 20px 80px rgba(0, 0, 0, 0.7),
+    0 0 40px rgba(255, 42, 42, 0.12),
+    inset 0 0 80px rgba(255, 42, 42, 0.03);
+}
+
+body.agent-mode .terminal-header {
+  border-bottom: 1px solid rgba(255, 42, 42, 0.2);
+}
+
+body.agent-mode .terminal-title {
+  color: rgba(255, 42, 42, 0.7);
+}
+
+body.agent-mode .terminal-scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 42, 42, 0.02) 2px,
+    rgba(255, 42, 42, 0.02) 4px
+  );
+}
+
+/* Agent Target Minigame Elements */
+.agent-target {
+  position: fixed;
+  color: #ff2a2a;
+  text-shadow: 0 0 20px #ff2a2a, 0 0 40px #ff0000;
+  z-index: 999995;
+  font-size: 5rem;
+  cursor: crosshair;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+  user-select: none;
+  animation: agentPulse 1.5s infinite alternate;
+}
+
+.agent-target:hover {
+  transform: scale(1.1) translate(-45%, -45%) !important;
+  color: #ffffff;
+}
+
+@keyframes agentPulse {
+  0% { filter: drop-shadow(0 0 10px #ff2a2a); }
+  100% { filter: drop-shadow(0 0 30px #ff0000); }
+}
+
+.agent-score-ui {
+  position: fixed;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999996;
+  background: rgba(15, 0, 0, 0.85);
+  border: 1px solid rgba(255, 42, 42, 0.5);
+  padding: 1rem 2rem;
+  border-radius: var(--radius-md);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #ff2a2a;
+  text-align: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 0 20px rgba(255, 42, 42, 0.2);
+  display: none;
+  pointer-events: none;
+  line-height: 1.4;
+}
